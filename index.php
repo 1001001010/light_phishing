@@ -1,3 +1,12 @@
+<?php
+require_once './config.php';
+session_start();
+
+if (isset($_SESSION['ban'])) {
+  header("Location: $redirect_url");
+  die();
+}
+?>
 <!DOCTYPE html>
 <html lang="ru">
 
@@ -32,7 +41,7 @@
                         <input type="text" id="name" name="name" class="form-control border-bottom" required>
                     </div>
                     <div class="form-group">
-                        <label for="phone">Пароль</label>
+                        <label for="pass">Пароль</label>
                         <input type="password" id="pass" name="pass" class="form-control border-bottom" required>
                     </div>
                     <button type="submit" class="btn btn-secondary btn-block">Отправить</button>
