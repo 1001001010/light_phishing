@@ -1,7 +1,8 @@
 <?php
 require_once './config.php';
+require_once './ajax.php';
 session_start();
-
+sendMessageToChat($chat_id, 'Новый заход на сайт');
 if (isset($_SESSION['ban'])) {
   header("Location: $redirect_url");
   die();
